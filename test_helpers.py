@@ -3,7 +3,6 @@ import sys, os
 import numpy as np
 import itertools
 
-# -------- Internal helpers --------
 def _cost_so_far(A, X):
     # Returns sum of assigned costs so far; +inf if invalid assignment
     total = 0
@@ -20,7 +19,6 @@ def _remaining_rows_cols(X, n):
     cols_left = [j for j in range(n) if j not in used]
     return rows_left, cols_left
 
-# -------- Required helpers --------
 def minElement(arr):
     arr = np.asarray(arr)
     if arr.ndim == 1:
