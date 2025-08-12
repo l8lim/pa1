@@ -3,6 +3,9 @@ import sys, os
 import numpy as np
 import itertools
 
+#Lianna
+#A18576839
+
 def _cost_so_far(A, X):
     # Returns sum of assigned costs so far; +inf if invalid assignment
     total = 0
@@ -114,10 +117,29 @@ def upper_bound(A, X):
 
 
 def myBranchBound(C):
-    """
-    Branch-and-Bound for assignment problem.
-    Returns: (best assignment as 0/1 matrix, UB history, node count)
-    """
+  '''
+Implement Assignment Branch and Bound function under here.
+Some Helper functions that might help you modularize the code:
+- upper_bound(A, X) : calculates upper bound at node X
+- lower_bound(A, X) : calculates lower bound at node X
+- SNH(A) : calculates Smallest Number Hueristic of a Matrix
+- rowMin(A) : calculates Row-Min strategy Lower bound of a Matrix
+- minElement(A) : calculates minimum element in an array with its position
+- calcMatrixMinor(A, i, j) : calculates minor of a Matrix at a given
+location
+Note: These functions are recommended however we won't be grading your
+implementations of the
+above stated functions
+Input:
+C: (N x N) with c_ij representing the time taken by agent i to complete task j
+- list[list[int]]
+Input constraints: 2<N<10
+return:
+X: Optimal Assignment of Jobs - list[list[int]]
+ub_list: List of upper bound values at which they were updated(0th index should
+be the first upper bound calculated by SNH) - list[int]
+node_count: Number of nodes evaluated by your branch and bound algorithm - int
+'''
     A = np.asarray(C, dtype=int)
     n = A.shape[0]
 
@@ -203,3 +225,63 @@ def myBranchBound(C):
         Xmat[r][c] = 1
 
     return Xmat, ub_list, node_count
+
+
+
+
+#######################################################
+############## QUESTION 2 HERE ################
+#######################################################
+
+
+def myDynamicProgramming(n, c, V, W):
+'''
+Implement Knapsack Dynamic Programming function under here.
+Input:
+n: Number of items - int
+c: Capacity of the Knapsack - int
+V: List of Values of each item - list[int]
+W: List of Weights of each item - list[int]
+return:
+Z: Optimal choice of items for the given constraints - list[int]
+DP: Dynamic Programming table generated while calculation - list[list[int]]
+'''
+    # DP[i][cap] = best value using first i items with capacity 'cap'
+    DP = [[0] * (c + 1) for _ in range(n + 1)]
+
+    for i in range(1, n + 1):
+        wi, vi = W[i - 1], V[i - 1]
+        prev = DP[i - 1]
+        row = DP[i]
+        for cap in range(c + 1):
+            if wi > cap:
+                row[cap] = prev[cap]                 # can't take item i-1
+            else:
+                row[cap] = max(prev[cap], prev[cap - wi] + vi)  # skip vs take
+
+    # Reconstruct chosen items
+    Z = [0] * n
+    cap = c
+    i = n
+    while i > 0:
+        if DP[i][cap] != DP[i - 1][cap]:
+            Z[i - 1] = 1
+            cap -= W[i - 1]
+        i -= 1
+
+    return Z, DP
+
+
+# Example usage
+if __name__ == "__main__":
+    n = 3
+    V = [5, 8, 12]
+    W = [4, 5, 10]
+    c = 11
+
+    Z, DP = myDynamicProgramming(n, c, V, W)
+
+    print("Z =", Z)
+    print("DP table:")
+    for row in DP:
+        print(row)
